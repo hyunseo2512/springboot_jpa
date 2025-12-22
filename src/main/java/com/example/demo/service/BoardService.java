@@ -2,12 +2,19 @@ package com.example.demo.service;
 
 import com.example.demo.dto.BoardDTO;
 import com.example.demo.entity.Board;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 public interface BoardService {
     // 추상메서드만 가능한 인터페이스
     // default method : 인터페이스에서 규칙을 잡거나, 로직을 잡거나 할 때 사용
     // 호환성 유지
+
+    /* convert : 변환, 위치는 상관 없음
+    * */
+
 
     /* BoardDTO => Board 객체로 변환
     * BoardDTO(class) : bno, title, writer, content, readCount, cmtQty, fileQty, regDate, modDate
@@ -43,4 +50,8 @@ public interface BoardService {
                 .build();
     }
 
+    Long insert(BoardDTO boardDTO);
+
+
+    Page<BoardDTO> getList(int pageNo);
 }
