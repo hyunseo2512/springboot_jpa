@@ -29,3 +29,8 @@ create database bootdb;
 grant all privileges on bootdb.*to 'springuser'@'localhost';
 flush privileges;
 
+controller : BoardDAO => BoardRepository (interface)
+sevice
+repository
+dto => 엣날 domain
+entity => 테이블 mapping용 객체
