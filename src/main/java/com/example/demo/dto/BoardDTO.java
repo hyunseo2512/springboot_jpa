@@ -1,8 +1,16 @@
 package com.example.demo.dto;
 
 
+import lombok.*;
+
 import java.time.LocalDateTime;
 
+@Getter
+@Setter
+@ToString
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class BoardDTO {
     private Long bno;
     private String title;

@@ -34,3 +34,6 @@ sevice
 repository
 dto => 엣날 domain
 entity => 테이블 mapping용 객체
+
+DTO => 화면 
+Entitiy => Mapping
