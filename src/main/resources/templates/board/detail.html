@@ -29,6 +29,57 @@
         <button class="btn btn-warning" id="modBtn">modify</button>
         <a th:href="@{/board/delete(bno=${board.bno})}"><button class="btn btn-danger" id="delBtn">delete</button></a>
         <a th:href="@{/board/list}"><button class="btn btn-success" id="listBtn">list</button></a>
+
+        <div id="comment">
+        <!--comment-->
+        <div class="input-group my-3">
+            <span class="input-group-text" id="cmtWriter">Tester</span>
+            <input type="text" id="cmtText" class="form-control" placeholder="Add Comment..." aria-label="Username" aria-describedby="basic-addon1">
+            <button id="cmtAddBtn" type="button" class="btn btn-primary">post</button>
+        </div>
+        <!-- comment spread -->
+        <ul class="list-group" id="cmtListArea">
+            <li class="list-group-item">
+                <div>
+                <div class="fw-bold">writer</div>
+                    content
+                </div>
+                <span class="badge text-bg-primary">reg_date</span>
+            </li>
+        </ul>
+
+        <!--moreBtn-->
+        <div class="input-group my-3">
+        <button type="button" class="btn btn-info">more</button>
+        </div>
+
+            <!--model-->
+            <div class="modal" tabindex="-1" id="commentModal">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="cmtWriterMod">Tester</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <input type="text" class="form-control" id="cmtTextMod">
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-primary" id="cmtModBtn">changes</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <script th:line="javascript">
+            const bnoValue= [[${board.bno}]];
+        </script>
+        <script th:src="@{/js/boardComment.js}"></script>
         <script th:src="@{/js/boardModify.js}"></script>
+        <script>
+            spreadCommentList(bnoValue);
+        </script>
     </div>
 </div>
