@@ -57,4 +57,9 @@ public class BoardController {
         model.addAttribute("ph", pageHandler);
     }
 
+    @GetMapping("/detail")
+    public void detail(@RequestParam("bno") long bno, Model model){
+        BoardDTO boardDTO = boardService.getDetail(bno);
+        model.addAttribute("board" , boardDTO);
+    }
 }
