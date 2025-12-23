@@ -17,10 +17,10 @@ public interface BoardService {
 
 
     /* BoardDTO => Board 객체로 변환
-    * BoardDTO(class) : bno, title, writer, content, readCount, cmtQty, fileQty, regDate, modDate
-    * Board(entity) : bno, title, writer, content,readCount, cmtQty, fileQty
-    * 화면 => DB
-    * */
+     *  BoardDTO(class) : bno, title, writer, content, readCount, cmtQty, fileQty, regDate, modDate
+     *  Board(entity) : bno, title, writer, content, readCount, cmtQty, fileQty
+     *  화면 => DB
+     * */
     default Board convertDtoToEntity(BoardDTO boardDTO){
         return Board.builder()
                 .bno(boardDTO.getBno())
@@ -33,9 +33,9 @@ public interface BoardService {
                 .build();
     }
     /* 반대 케이스
-    * DB => 화면
-    * Board => BoardDTO
-    * */
+     *  DB => 화면
+     *  Board => BoardDTO
+     * */
     default BoardDTO convertEntityToDto(Board board){
         return BoardDTO.builder()
                 .bno(board.getBno())
@@ -56,4 +56,8 @@ public interface BoardService {
     Page<BoardDTO> getList(int pageNo);
 
     BoardDTO getDetail(long bno);
+
+    Long modify(BoardDTO boardDTO);
+
+    void remove(long bno);
 }

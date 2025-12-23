@@ -3,6 +3,8 @@ package com.example.demo.service;
 import com.example.demo.dto.BoardDTO;
 import com.example.demo.entity.Board;
 import com.example.demo.repository.BoardRepository;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -47,16 +49,16 @@ public class BoardServiceImpl implements BoardService{
 //                    .map(board -> convertEntityToDto(board))
 //                    .toList();
 //        return boardDTOList;
-//    }
 
+//    }
     @Override
     public Page<BoardDTO> getList(int pageNo) {
         // limit 시작번지, 개수 => 번지는 0부터 시작
         // pageNo = 1 -> limit 0, 10
         Pageable pageable = PageRequest.of(pageNo -1, 10, Sort.by("bno").descending());
-        Page<Board> pageList =  boardRepository.findAll(pageable); 
+        Page<Board> pageList =  boardRepository.findAll(pageable);
         Page<BoardDTO> boardDTOPage = pageList.map(this :: convertEntityToDto);
-
+        log.info(">>> boardDTOPage >> {}", boardDTOPage.getContent() );
         return boardDTOPage;
     }
 
@@ -81,9 +83,67 @@ public class BoardServiceImpl implements BoardService{
         }
         return null;
     }
+
+    @Transactional
+    @Override
+    public Long modify(BoardDTO boardDTO) {
+        /* optional.orElseThrow(()-> new EntityNotFoundException("존재하지 않는 게시글"))
+        *
+        * */
+
+        Board board = boardRepository.findById(boardDTO.getBno())
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 게시글"));
+                board.setTitle(boardDTO.getTitle());
+                board.setContent(boardDTO.getContent());
+
+                boardReadCountUpdate(board, -1);
+
+        return boardDTO.getBno();
+    }
+
+    @Override
+    public void remove(long bno) {
+        boardRepository.deleteById(bno);
+    }
+
+
     private void boardReadCountUpdate(Board board, int i){
         // readCount update
         board.setReadCount(board.getReadCount()+i);
         boardRepository.save(board);
     }
+
+    /* save() => id가 없으면 insert / id가 있으면 update
+    * EntityNotFoundException : where 값이 존재하지 않을 경우 발생
+    * 정보 유실 가능성이 커짐
+    * dirty checking 미작동 가능성이 커짐
+    *
+    * 변동감지(dirty checking)
+    * findById(bno) 를 통해서 먼저 조회 => 영속 상태를 만든 후 수정 => save()
+    * @Transactional => dirty checking 만으로 업데이트가 가능 / save() 없이도 업데이트가 가능
+    *
+    * dirty checking (더티 체킹) = 변동감지
+    * 엔티티가 영속성 컨텍스트에 올라가 있는 상태 (=영속상태) 일 때,
+    * 해당 객체의 필드가 변경되면, 트랜젝션이 종료되기 전에 JPA가
+    * 변경한 부분만 자동 감지하여 update 쿼리를 실행
+    * save() 없어도 (명시적으로 호출하지 않아도) 수정된 필드를 DB에 자동 반영
+    * */
+
+//    @Override
+//    public Long modify(BoardDTO boardDTO) {
+//        // update 기능은 없음.
+//        // findById 객체를 가져와서 => 내 객체에서 변경값만 수정 => save()
+//        Optional<Board> optional = boardRepository.findById(boardDTO.getBno());
+//        if(optional.isPresent()){
+//            Board board = optional.get();
+//            board.setTitle(boardDTO.getTitle());
+//            board.setContent(boardDTO.getContent());
+//            boardRepository.save(board);
+//            boardReadCountUpdate(board, -1);
+//            return board.getBno();
+//        }
+//
+//        return 0L;
+
+//    }
 }
