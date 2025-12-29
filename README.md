@@ -14,6 +14,8 @@
 - log4jdbc
 - thymeleaf-layout
 - Querydsl JPA Support 5.0.0:jakarta
+- Spring Boot Starter Security
+- Thymeleaf Extras Springsecurity6
 ---
 
 ## DB 설정 
