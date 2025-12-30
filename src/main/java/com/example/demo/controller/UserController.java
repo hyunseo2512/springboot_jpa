@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.net.http.HttpRequest;
+import java.security.Principal;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -55,41 +56,60 @@ public class UserController {
     }
 
     @GetMapping("/modify")
-    public void modify(){}
+    public void modify(Model model, Principal principal){
+        UserDTO userDTO = userService.getDetail(principal.getName());
+        log.info(">>> userDTO >> {}", userDTO);
+        model.addAttribute("userDTO", userDTO);
+    }
 
     @PostMapping("/modify")
     public String modify(UserDTO userDTO,
-                        HttpServletRequest request,
+                         HttpServletRequest request,
                          HttpServletResponse response,
-                        RedirectAttributes redirectAttributes){
+                         RedirectAttributes redirectAttributes){
+
         String email = userService.modify(userDTO);
-        if(email != null) {
-            redirectAttributes.addFlashAttribute("modify_msg", "ok");
-        }else {
-            redirectAttributes.addFlashAttribute("modify_msg", "fail");
+        if(email != null){
+            redirectAttributes.addFlashAttribute("modMsg", "ok");
+        }else{
+            redirectAttributes.addFlashAttribute("modMsg", "fail");
         }
+        // 하단 로그아웃 메서드 호출
         logout(request, response);
         return "redirect:/";
     }
 
     @GetMapping("/list")
-    public void list(){}
-
-    @PostMapping("/list")
-    public String list(Model model) {
+    public void list(Model model){
         List<UserDTO> userList = userService.getList();
-
-        return "redirect:/user/list";
+        model.addAttribute("userList", userList);
     }
 
     @GetMapping("/remove")
     public String remove(UserDTO userDTO,
-                         http)
+                         HttpServletRequest request,
+                         HttpServletResponse response,
+                         RedirectAttributes redirectAttributes,
+                         Principal principal){
+        String email = principal.getName();
+        email = userService.remove(email);
+        if(email != null){
+            redirectAttributes.addFlashAttribute("delMsg", "ok");
+        }else{
+            redirectAttributes.addFlashAttribute("delMsg", "fail");
+        }
+        // 하단 로그아웃 메서드 호출
+        logout(request, response);
+        return "redirect:/";
+    }
 
-    private void logout(HttpServletRequest req, HttpServletResponse res) {
-        // 내가 로그인 할 때 사용한 시큐리티의 authentication 객체
-        Authentication authenication =
-                SecurityContextHolder.getContext().getAuthentication();
-        new SecurityContextLogoutHandler().logout(req, res, authenication);
+    private void logout(HttpServletRequest request,
+                        HttpServletResponse response){
+        Authentication auth = SecurityContextHolder
+                .getContext().getAuthentication();
+        if (auth != null){
+            new SecurityContextLogoutHandler()
+                    .logout(request, response, auth);
+        }
     }
 }

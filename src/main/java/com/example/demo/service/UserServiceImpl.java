@@ -5,11 +5,11 @@ import com.example.demo.entity.AuthRole;
 import com.example.demo.entity.User;
 import com.example.demo.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -17,7 +17,7 @@ import java.util.List;
 @Slf4j
 @RequiredArgsConstructor
 @Service
-public class UserServiceImpl implements UserService{
+public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
@@ -35,11 +35,12 @@ public class UserServiceImpl implements UserService{
     @Override
     public void lastLoginUpdate(String name) {
         User user = userRepository.findById(name)
-                .orElseThrow(()->new EntityNotFoundException("해당 사용자가 없습니다."));
+                .orElseThrow(()-> new EntityNotFoundException("해당사용자가 없습니다."));
         // 상태변경 (dirty checking 발생) => transactional
         user.setLastLogin(LocalDateTime.now());
     }
 
+    @Transactional
     @Override
     public String modify(UserDTO userDTO) {
         User user = userRepository.findById(userDTO.getEmail())
@@ -64,6 +65,20 @@ public class UserServiceImpl implements UserService{
                 .toList();
     }
 
+    @Override
+    public UserDTO getDetail(String name) {
+        User user = userRepository.findByEmailWithAuth(name)
+                .orElseThrow(()-> new EntityNotFoundException("해당 유저가 없습니다."));
 
+        return convertEntityToDTO(user);
+    }
 
+    @Transactional
+    @Override
+    public String remove(String email) {
+        User user = userRepository.findById(email)
+                .orElseThrow(()-> new EntityNotFoundException("해당 유저가 없습니다."));
+        userRepository.delete(user);
+        return user.getEmail();
+    }
 }

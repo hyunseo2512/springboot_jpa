@@ -59,5 +59,9 @@ public interface UserService {
 
     List<UserDTO> getList();
 
+    UserDTO getDetail(String name);
+
+    String remove(String email);
+
     // Entity = Dto
 }
